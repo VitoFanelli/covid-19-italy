@@ -1,0 +1,213 @@
+---
+title: "Covid-19 Italia"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F, comment = "")
+
+library(tidyverse)
+library(lubridate)
+library(highcharter)
+library(DT)
+```
+
+Dati ufficiali della Protezione Civile.
+
+```{r dati}
+dati <- read.csv("/Users/vito/Desktop/Data Science/covid-19/dati-regioni/dpc-covid19-ita-regioni.csv", h = T, sep = ",",
+                    stringsAsFactors = F)
+
+load("../notebookIT/popolazione2019_regione_eta.RData")
+load("../notebookIT/predictions.RData")
+
+dati$data <- as.Date(dati$data)
+colnames(dati)[4] <- "regione"
+dati$regione[dati$codice_regione == 4] <- "Trentino Alto Adige"
+
+covid19 <- dati %>% 
+  group_by(regione, data) %>% 
+  summarise(
+    contagi = sum(totale_casi),
+    dimessi = sum(dimessi_guariti),
+    decessi = sum(deceduti),
+    tamponi = sum(tamponi)
+  ) %>% 
+  ungroup()
+
+covid19 <- left_join(covid19, popolazione2019_regione_eta, by = "regione")
+
+covid19 <- covid19 %>% 
+  mutate(
+    tasso_contagi_x_1000 = round(contagi/popolazione*1000,2),
+    tasso_mortalita_x_100 = round(decessi/contagi*100,2),
+    dimessi_decessi = round(dimessi/decessi,2),
+    copertura_tamponi_x_100 = round(tamponi/popolazione*100,2)
+  )
+
+italia <- covid19 %>% 
+  group_by(data) %>% 
+  summarise(contagi = sum(contagi), decessi = sum(decessi), 
+            dimessi = sum(dimessi), popolazione = sum(popolazione)) %>% 
+  mutate(
+    tasso_contagi_x_1000 = round(contagi/popolazione*1000,2),
+    tasso_mortalita_x_100 = round(decessi/contagi*100,2)
+  ) %>% 
+  ungroup()
+```
+
+**`r paste0("CASI TOTALI al ", max(italia$data), ": ", formatC(italia$contagi[italia$data == max(italia$data)], big.mark = "."))`**
+
+**`r paste0("DIMESSI al ", max(italia$data), ": ", formatC(italia$dimessi[italia$data == max(italia$data)], big.mark = "."))`**
+
+**`r paste0("DECESSI al ", max(italia$data), ": ", formatC(italia$decessi[italia$data == max(italia$data)], big.mark = "."))`**
+
+```{r italia}
+highchart(type = "stock") %>% 
+  hc_yAxis_multiples(
+    list(opposite = F),
+    list()
+  ) %>%
+  hc_add_series(italia, hcaes(x = data, y = tasso_contagi_x_1000),
+    type = "line", name = "Tasso di contagio x 1000 abitanti") %>% 
+  hc_add_series(italia, hcaes(x = data, y = tasso_mortalita_x_100,2),
+    type = "line", name = "Tasso di mortalità x 100 infetti", yAxis = 1) %>% 
+  hc_legend(enabled = T) %>% 
+  hc_title(text = paste0("Situazione Italia al ", max(italia$data))) %>%
+  hc_subtitle(text = "D.P.C.M. = Decreto del Presidente del Consiglio dei Ministri") %>% 
+  hc_xAxis(
+    title = list(text = "Giorno"),
+    plotLines = list(
+      list(
+        label = list(text = "D.P.C.M. 04/03"),
+        value = datetime_to_timestamp(as.Date("2020-03-04")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 23/02-25/02"),
+        value = datetime_to_timestamp(as.Date("2020-02-25")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 01/03"),
+        value = datetime_to_timestamp(as.Date("2020-03-01")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 04/03"),
+        value = datetime_to_timestamp(as.Date("2020-03-04")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 08/03-09/03"),
+        value = datetime_to_timestamp(as.Date("2020-03-09")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 11/03"),
+        value = datetime_to_timestamp(as.Date("2020-03-11")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 22/03"),
+        value = datetime_to_timestamp(as.Date("2020-03-22")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      )
+    )
+  )
+```
+
+```{r predict}
+highchart(type = "stock") %>% 
+  hc_add_series(italia, hcaes(x = data, y = contagi),
+                name = "Contagi", type = "line",
+                color = "black") %>% 
+  hc_add_series(prediction5, hcaes(x = data, y = floor(pred)),
+                name = "Previsione 5%", type = "line",
+                color = "#ffb3b3") %>% 
+  hc_add_series(prediction10, hcaes(x = data, y = floor(pred)),
+                name = "Previsione 10%", type = "line",
+                color = "#b3d9ff") %>% 
+  hc_add_series(prediction20, hcaes(x = data, y = floor(pred)),
+                name = "Previsione 20%", type = "line",
+                color = "#b3e6b3") %>% 
+  hc_legend(enabled = T) %>% 
+  hc_title(text = paste0("Previsioni al ", min(prediction5$data)-1)) %>% 
+  hc_subtitle(text = "Le previsioni sono elaborate ipotizzando un decremento giornaliero costante dei 
+nuovi contagi pari al 5%, 10% e 20%.
+")
+```
+
+
+```{r covid19}
+tabella <- covid19 %>% 
+  filter(data == max(covid19$data)) %>% 
+  select(data, regione, tasso_contagi_x_1000, tasso_mortalita_x_100,
+         dimessi_decessi, copertura_tamponi_x_100)
+  
+datatable(tabella, caption = "I dati sono cumulati a partire dal 24/02/2020")
+```
+
+```{r contagi}
+highchart(type = "stock") %>% 
+  hc_add_series(covid19, hcaes(x = data, y = tasso_contagi_x_1000, 
+    group = regione), type = "line") %>% 
+  hc_legend(enabled = T) %>% 
+  hc_title(text = "Tasso di contagio (x 1000 abitanti) per Giorno/Regione") %>%
+  hc_xAxis(title = list(text = "Giorno")) %>% 
+  hc_yAxis(title = list(text = "Tasso di contagio"))
+```
+
+```{r decessi}
+highchart(type = "stock") %>% 
+  hc_add_series(covid19, hcaes(x = data, y = tasso_mortalita_x_100, 
+    group = regione), type = "line") %>% 
+  hc_legend(enabled = T) %>% 
+  hc_title(text = "Tasso di mortalità (x 100 infetti) per Giorno/Regione") %>%
+  hc_xAxis(title = list(text = "Giorno")) %>% 
+  hc_yAxis(title = list(text = "Tasso di mortalità"))
+```
+
+```{r dimessi-decessi}
+highchart(type = "stock") %>% 
+  hc_add_series(covid19, hcaes(x = data, y = dimessi_decessi, 
+    group = regione), type = "line") %>% 
+  hc_legend(enabled = T) %>% 
+  hc_title(text = "Rapporto Dimessi-Decessi per Giorno/Regione") %>%
+  hc_xAxis(title = list(text = "Giorno")) %>% 
+  hc_yAxis(title = list(text = "Rapporto"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
