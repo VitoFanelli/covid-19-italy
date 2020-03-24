@@ -13,6 +13,7 @@ library(tidyverse)
 library(lubridate)
 library(highcharter)
 library(DT)
+library(rjson)
 ```
 
 Dati ufficiali della Protezione Civile.
@@ -48,15 +49,43 @@ covid19 <- covid19 %>%
     copertura_tamponi_x_100 = round(tamponi/popolazione*100,2)
   )
 
+covid19 <- covid19 %>% 
+  group_by(regione) %>% 
+  mutate(
+    contagi_giorno = c(NA,diff(contagi)),
+    decessi_giorno = c(NA,diff(decessi)),
+  ) %>% 
+  ungroup()
+
+covid19$contagi_giorno[is.na(covid19$contagi_giorno)] <-
+  covid19$contagi[covid19$data == "2020-02-24"]
+
+covid19$decessi_giorno[is.na(covid19$decessi_giorno)] <-
+  covid19$decessi[covid19$data == "2020-02-24"]
+
 italia <- covid19 %>% 
   group_by(data) %>% 
   summarise(contagi = sum(contagi), decessi = sum(decessi), 
-            dimessi = sum(dimessi), popolazione = sum(popolazione)) %>% 
+            dimessi = sum(dimessi), popolazione = sum(popolazione),
+            contagi_giorno = sum(contagi_giorno),
+            decessi_giorno = sum(decessi_giorno)) %>% 
   mutate(
     tasso_contagi_x_1000 = round(contagi/popolazione*1000,2),
     tasso_mortalita_x_100 = round(decessi/contagi*100,2)
   ) %>% 
   ungroup()
+
+# scrivo json per adriano
+decessiITA_giorno_json <- list(giorno = as.character(italia$data), 
+                               decessi = italia$decessi_giorno)
+jsonITA <- toJSON(decessiITA_giorno_json)
+write(jsonITA, file = "../notebookIT/decessiITA.json")
+
+decessiREG_giorno_json <- list(regione = covid19$regione,
+                               giorno = as.character(covid19$data), 
+                               decessi = covid19$decessi_giorno)
+jsonREG <- toJSON(decessiREG_giorno_json)
+write(jsonREG, file = "../notebookIT/decessiREG.json")
 ```
 
 **`r paste0("CASI TOTALI al ", max(italia$data), ": ", formatC(italia$contagi[italia$data == max(italia$data)], big.mark = "."))`**
@@ -149,7 +178,7 @@ highchart(type = "stock") %>%
                 name = "Previsione 20%", type = "line",
                 color = "#b3e6b3") %>% 
   hc_legend(enabled = T) %>% 
-  hc_title(text = paste0("Previsioni al ", min(prediction5$data)-1)) %>% 
+  hc_title(text = paste0("Previsioni Contagi al ", min(prediction5$data)-1)) %>% 
   hc_subtitle(text = "Le previsioni sono elaborate ipotizzando un decremento giornaliero costante dei 
 nuovi contagi pari al 5%, 10% e 20%.
 ")
