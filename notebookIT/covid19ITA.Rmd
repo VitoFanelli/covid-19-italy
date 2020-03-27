@@ -54,6 +54,7 @@ covid19 <- covid19 %>%
   mutate(
     contagi_giorno = c(NA,diff(contagi)),
     decessi_giorno = c(NA,diff(decessi)),
+    dimessi_giorno = c(NA,diff(dimessi))
   ) %>% 
   ungroup()
 
@@ -63,12 +64,17 @@ covid19$contagi_giorno[is.na(covid19$contagi_giorno)] <-
 covid19$decessi_giorno[is.na(covid19$decessi_giorno)] <-
   covid19$decessi[covid19$data == "2020-02-24"]
 
+covid19$dimessi_giorno[is.na(covid19$dimessi_giorno)] <-
+  covid19$dimessi[covid19$data == "2020-02-24"]
+
 italia <- covid19 %>% 
   group_by(data) %>% 
   summarise(contagi = sum(contagi), decessi = sum(decessi), 
             dimessi = sum(dimessi), popolazione = sum(popolazione),
             contagi_giorno = sum(contagi_giorno),
-            decessi_giorno = sum(decessi_giorno)) %>% 
+            decessi_giorno = sum(decessi_giorno),
+            dimessi_giorno = sum(dimessi_giorno)
+  ) %>% 
   mutate(
     tasso_contagi_x_1000 = round(contagi/popolazione*1000,2),
     tasso_mortalita_x_100 = round(decessi/contagi*100,2)
@@ -77,13 +83,15 @@ italia <- covid19 %>%
 
 # scrivo json per adriano
 decessiITA_giorno_json <- list(giorno = as.character(italia$data), 
-                               decessi = italia$decessi_giorno)
+                               decessi = italia$decessi_giorno,
+                               dimessi = italia$dimessi_giorno)
 jsonITA <- toJSON(decessiITA_giorno_json)
 write(jsonITA, file = "../notebookIT/decessiITA.json")
 
 decessiREG_giorno_json <- list(regione = covid19$regione,
                                giorno = as.character(covid19$data), 
-                               decessi = covid19$decessi_giorno)
+                               decessi = covid19$decessi_giorno,
+                               dimessi = covid19$dimessi_giorno)
 jsonREG <- toJSON(decessiREG_giorno_json)
 write(jsonREG, file = "../notebookIT/decessiREG.json")
 ```
