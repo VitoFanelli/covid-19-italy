@@ -102,6 +102,8 @@ write(jsonREG, file = "../notebookIT/decessiREG.json")
 
 **`r paste0("DECESSI al ", max(italia$data), ": ", formatC(italia$decessi[italia$data == max(italia$data)], big.mark = "."))`**
 
+**`r paste0("POSITIVI al ", max(italia$data), ": ", formatC(italia$contagi[italia$data == max(italia$data)] - italia$dimessi[italia$data == max(italia$data)] - italia$decessi[italia$data == max(italia$data)], big.mark = "."))`**
+
 ### Analisi Nazionale
 
 ```{r trend}
