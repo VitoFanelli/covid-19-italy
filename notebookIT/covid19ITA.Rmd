@@ -83,17 +83,26 @@ italia <- covid19 %>%
 
 # scrivo json per adriano
 decessiITA_giorno_json <- list(giorno = as.character(italia$data), 
-                               decessi = italia$decessi_giorno,
-                               dimessi = italia$dimessi_giorno)
+                               decessi = italia$decessi_giorno)
 jsonITA <- toJSON(decessiITA_giorno_json)
 write(jsonITA, file = "../notebookIT/decessiITA.json")
 
+dimessiITA_giorno_json <- list(giorno = as.character(italia$data), 
+                               dimessi = italia$dimessi_giorno)
+jsonITA <- toJSON(dimessiITA_giorno_json)
+write(jsonITA, file = "../notebookIT/dimessiITA.json")
+
 decessiREG_giorno_json <- list(regione = covid19$regione,
                                giorno = as.character(covid19$data), 
-                               decessi = covid19$decessi_giorno,
-                               dimessi = covid19$dimessi_giorno)
+                               decessi = covid19$decessi_giorno)
 jsonREG <- toJSON(decessiREG_giorno_json)
 write(jsonREG, file = "../notebookIT/decessiREG.json")
+
+dimessiREG_giorno_json <- list(regione = covid19$regione,
+                               giorno = as.character(covid19$data), 
+                               dimessi = covid19$dimessi_giorno)
+jsonREG <- toJSON(dimessiREG_giorno_json)
+write(jsonREG, file = "../notebookIT/dimessiREG.json")
 ```
 
 **`r paste0("CASI TOTALI al ", max(italia$data), ": ", formatC(italia$contagi[italia$data == max(italia$data)], big.mark = "."))`**
