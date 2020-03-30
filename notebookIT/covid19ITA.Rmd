@@ -272,7 +272,7 @@ highchart(type = "stock") %>%
   hc_subtitle(text = "Le previsioni sono elaborate ipotizzando un decremento giornaliero costante dei 
 nuovi contagi pari al 5%, 10% e 20%.
 ") %>% 
-  hc_yAxis(title = list(text = "Tasso di contagio")) %>% 
+  hc_yAxis(title = list(text = "Contagi")) %>% 
   hc_xAxis(title = list(text = "Giorno"))
 ```
 
