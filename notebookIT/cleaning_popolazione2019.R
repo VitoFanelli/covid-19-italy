@@ -21,7 +21,7 @@ popolazione2019_regione <- popolazione2019_regione %>%
   mutate(Territorio = case_when(
     Territorio == "Valle d'Aosta / Vallée d'Aoste" ~ "Valle d'Aosta",
     Territorio == "Trentino Alto Adige / Südtirol" ~ "Trentino Alto Adige",
-    Territorio == "Emilia-Romagna" ~ "Emilia Romagna",
+    #Territorio == "Emilia-Romagna" ~ "Emilia Romagna",
     Territorio == "Friuli-Venezia Giulia" ~ "Friuli Venezia Giulia",
     TRUE ~ Territorio
   ))
