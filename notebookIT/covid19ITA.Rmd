@@ -54,7 +54,11 @@ covid19 <- covid19 %>%
   mutate(
     contagi_giorno = c(NA,diff(contagi)),
     decessi_giorno = c(NA,diff(decessi)),
-    dimessi_giorno = c(NA,diff(dimessi))
+    dimessi_giorno = c(NA,diff(dimessi)),
+    variazPerc_tasso_contagi_x_1000 = c(NA, 
+      diff(tasso_contagi_x_1000)/tasso_contagi_x_1000[-n()]*100),
+    variazPerc_tasso_mortalita_x_100 = c(NA, 
+      diff(tasso_mortalita_x_100)/tasso_mortalita_x_100[-n()]*100)
   ) %>% 
   ungroup()
 
@@ -67,6 +71,14 @@ covid19$decessi_giorno[is.na(covid19$decessi_giorno)] <-
 covid19$dimessi_giorno[is.na(covid19$dimessi_giorno)] <-
   covid19$dimessi[covid19$data == "2020-02-24"]
 
+covid19$variazPerc_tasso_contagi_x_1000[
+  covid19$variazPerc_tasso_contagi_x_1000 == "Inf"
+] <- NA
+
+covid19$variazPerc_tasso_mortalita_x_100[
+  covid19$variazPerc_tasso_mortalita_x_100 == "Inf"
+] <- NA
+
 italia <- covid19 %>% 
   group_by(data) %>% 
   summarise(contagi = sum(contagi), decessi = sum(decessi), 
@@ -75,11 +87,25 @@ italia <- covid19 %>%
             decessi_giorno = sum(decessi_giorno),
             dimessi_giorno = sum(dimessi_giorno)
   ) %>% 
+  ungroup() %>% 
   mutate(
     tasso_contagi_x_1000 = round(contagi/popolazione*1000,2),
     tasso_mortalita_x_100 = round(decessi/contagi*100,2)
   ) %>% 
-  ungroup()
+  mutate(
+    variazPerc_tasso_contagi_x_1000 = c(NA, 
+      diff(tasso_contagi_x_1000)/tasso_contagi_x_1000[-n()]*100),
+    variazPerc_tasso_mortalita_x_100 = c(NA, 
+      diff(tasso_mortalita_x_100)/tasso_mortalita_x_100[-n()]*100)
+  )
+
+italia$variazPerc_tasso_contagi_x_1000[
+  italia$variazPerc_tasso_contagi_x_1000 == "Inf"
+] <- NA
+
+italia$variazPerc_tasso_mortalita_x_100[
+  italia$variazPerc_tasso_mortalita_x_100 == "Inf"
+] <- NA
 
 # scrivo json per adriano
 decessiITA_giorno_json <- list(giorno = as.character(italia$data), 
@@ -179,6 +205,13 @@ highchart(type = "stock") %>%
         color = '#ff0000',
         dashStyle = "shortdash",
         width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 01/04"),
+        value = datetime_to_timestamp(as.Date("2020-04-01")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
       )
     )
   )
@@ -245,6 +278,13 @@ highchart(type = "stock") %>%
       list(
         label = list(text = "D.P.C.M. 22/03"),
         value = datetime_to_timestamp(as.Date("2020-03-22")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 01/04"),
+        value = datetime_to_timestamp(as.Date("2020-04-01")),
         color = '#ff0000',
         dashStyle = "shortdash",
         width = 1
@@ -332,6 +372,27 @@ highchart(type = "stock") %>%
   hc_xAxis(title = list(text = "Giorno")) %>% 
   hc_yAxis(title = list(text = "Tasso di mortalità"))
 ```
+
+```{r variaz perc tasso contagi}
+highchart(type = "stock") %>% 
+  hc_add_series(covid19, hcaes(x = data, y = variazPerc_tasso_contagi_x_1000, 
+    group = regione), type = "line") %>% 
+  hc_legend(enabled = T) %>% 
+  hc_title(text = "Variazione % Tasso di contagio (x 1000 abitanti)") %>%
+  hc_xAxis(title = list(text = "Giorno")) %>% 
+  hc_yAxis(title = list(text = "Variazione %"))
+```
+
+```{r variaz perc tasso decessi}
+highchart(type = "stock") %>% 
+  hc_add_series(covid19, hcaes(x = data, y = variazPerc_tasso_mortalita_x_100, 
+    group = regione), type = "line") %>% 
+  hc_legend(enabled = T) %>% 
+  hc_title(text = "Variazione % Tasso di mortalità (x 100 contagi)") %>%
+  hc_xAxis(title = list(text = "Giorno")) %>% 
+  hc_yAxis(title = list(text = "Variazione %"))
+```
+
 
 ```{r dimessi-decessi}
 highchart(type = "stock") %>% 
