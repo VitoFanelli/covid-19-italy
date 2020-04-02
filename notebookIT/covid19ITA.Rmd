@@ -56,9 +56,9 @@ covid19 <- covid19 %>%
     decessi_giorno = c(NA,diff(decessi)),
     dimessi_giorno = c(NA,diff(dimessi)),
     variazPerc_tasso_contagi_x_1000 = c(NA, 
-      diff(tasso_contagi_x_1000)/tasso_contagi_x_1000[-n()]*100),
+      round(diff(tasso_contagi_x_1000)/tasso_contagi_x_1000[-n()]*100,2)),
     variazPerc_tasso_mortalita_x_100 = c(NA, 
-      diff(tasso_mortalita_x_100)/tasso_mortalita_x_100[-n()]*100)
+      round(diff(tasso_mortalita_x_100)/tasso_mortalita_x_100[-n()]*100,2))
   ) %>% 
   ungroup()
 
@@ -94,9 +94,9 @@ italia <- covid19 %>%
   ) %>% 
   mutate(
     variazPerc_tasso_contagi_x_1000 = c(NA, 
-      diff(tasso_contagi_x_1000)/tasso_contagi_x_1000[-n()]*100),
+      round(diff(tasso_contagi_x_1000)/tasso_contagi_x_1000[-n()]*100,2)),
     variazPerc_tasso_mortalita_x_100 = c(NA, 
-      diff(tasso_mortalita_x_100)/tasso_mortalita_x_100[-n()]*100)
+      round(diff(tasso_mortalita_x_100)/tasso_mortalita_x_100[-n()]*100,2))
   )
 
 italia$variazPerc_tasso_contagi_x_1000[
