@@ -208,6 +208,13 @@ highchart(type = "stock") %>%
         color = '#ff0000',
         dashStyle = "shortdash",
         width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 10/04"),
+        value = datetime_to_timestamp(as.Date("2020-04-10")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
       )
     )
   )
@@ -281,6 +288,13 @@ highchart(type = "stock") %>%
       list(
         label = list(text = "D.P.C.M. 01/04"),
         value = datetime_to_timestamp(as.Date("2020-04-01")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 10/04"),
+        value = datetime_to_timestamp(as.Date("2020-04-10")),
         color = '#ff0000',
         dashStyle = "shortdash",
         width = 1
