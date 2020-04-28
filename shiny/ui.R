@@ -54,14 +54,14 @@ ui <- dashboardPage(
             highchartOutput("tested") %>% withSpinner(color = "red")
           ),
           box(
-            title = "New Cases", width = 12,
+            title = "New Cases", width = 12, height = "650px",
             solidHeader = T, collapsible = F, status = "danger",
-            highchartOutput("new_cases") %>% withSpinner(color = "red")
+            highchartOutput("new_cases", height = "600px") %>% withSpinner(color = "red")
           ),
           box(
-            title = "Dead", width = 12,
+            title = "Dead", width = 12, height = "650px",
             solidHeader = T, collapsible = F, status = "danger",
-            highchartOutput("dead_cases") %>% withSpinner(color = "red")
+            highchartOutput("dead_cases", height = "600px") %>% withSpinner(color = "red")
           ),
           box(
             title = "Total Cases", width = 6,
@@ -101,14 +101,14 @@ ui <- dashboardPage(
             highchartOutput("tested_reg") %>% withSpinner(color = "red")
           ),
           box(
-            title = "New Cases", width = 12,
+            title = "New Cases", width = 12, height = "650px",
             solidHeader = T, collapsible = F, status = "danger",
-            highchartOutput("new_cases_reg") %>% withSpinner(color = "red")
+            highchartOutput("new_cases_reg",  height = "600px") %>% withSpinner(color = "red")
           ),
           box(
-            title = "Dead", width = 12,
+            title = "Dead", width = 12, height = "650px",
             solidHeader = T, collapsible = F, status = "danger",
-            highchartOutput("dead_cases_reg") %>% withSpinner(color = "red")
+            highchartOutput("dead_cases_reg",  height = "600px") %>% withSpinner(color = "red")
           ),
           box(
             title = "Total Cases", width = 6,
