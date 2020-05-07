@@ -15,10 +15,11 @@ library(shinycssloaders)
 
 # [2] Import --------------------------------------------------------------
 
-data <- read.csv("/Users/vito/Desktop/Data Science/covid-19/dati-regioni/dpc-covid19-ita-regioni.csv", 
-                 h = T, sep = ",", stringsAsFactors = F)
+data <- read_delim("/Users/vito/Desktop/Data Science/covid-19/dati-regioni/dpc-covid19-ita-regioni.csv", delim = ",")
 
 # [3] Cleaning ------------------------------------------------------------
+
+data <- data %>% filter(!is.na(data))
 
 data$data <- as.Date(data$data)
 data$denominazione_regione[data$codice_regione == 4] <- "Trentino Alto Adige"
@@ -77,3 +78,4 @@ italy <- regions %>%
 
 save(regions, italy, file = "./dataset.RData")
 
+rm(list = ls())

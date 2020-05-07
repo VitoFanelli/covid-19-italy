@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = F, warning = F, comment = "")
+knitr::opts_chunk$set(echo = F, warning = F, comment = "", message = F)
 
 library(tidyverse)
 library(lubridate)
@@ -19,8 +19,9 @@ library(rjson)
 Dati ufficiali della Protezione Civile (https://github.com/pcm-dpc/COVID-19)
 
 ```{r dati}
-dati <- read.csv("/Users/vito/Desktop/Data Science/covid-19/dati-regioni/dpc-covid19-ita-regioni.csv", h = T, sep = ",",
-                    stringsAsFactors = F)
+dati <- read_delim("/Users/vito/Desktop/Data Science/covid-19/dati-regioni/dpc-covid19-ita-regioni.csv", delim = ",")
+
+dati <- dati %>% filter(!is.na(data))
 
 load("../notebookIT/popolazione2019_regione_eta.RData")
 load("../notebookIT/predictions.RData")
@@ -127,13 +128,13 @@ jsonREG <- toJSON(dimessiREG_giorno_json)
 write(jsonREG, file = "../notebookIT/dimessiREG.json")
 ```
 
-**`r paste0("CASI TOTALI al ", max(italia$data), ": ", formatC(italia$contagi[italia$data == max(italia$data)], big.mark = "."))`**
+**`r paste0("CASI TOTALI al ", max(italia$data), ": ", format(italia$contagi[italia$data == max(italia$data)], big.mark = "."))`**
 
-**`r paste0("DIMESSI al ", max(italia$data), ": ", formatC(italia$dimessi[italia$data == max(italia$data)], big.mark = "."))`**
+**`r paste0("DIMESSI al ", max(italia$data), ": ", format(italia$dimessi[italia$data == max(italia$data)], big.mark = "."))`**
 
-**`r paste0("DECESSI al ", max(italia$data), ": ", formatC(italia$decessi[italia$data == max(italia$data)], big.mark = "."))`**
+**`r paste0("DECESSI al ", max(italia$data), ": ", format(italia$decessi[italia$data == max(italia$data)], big.mark = "."))`**
 
-**`r paste0("POSITIVI al ", max(italia$data), ": ", formatC(italia$contagi[italia$data == max(italia$data)] - italia$dimessi[italia$data == max(italia$data)] - italia$decessi[italia$data == max(italia$data)], big.mark = "."))`**
+**`r paste0("POSITIVI al ", max(italia$data), ": ", format(italia$contagi[italia$data == max(italia$data)] - italia$dimessi[italia$data == max(italia$data)] - italia$decessi[italia$data == max(italia$data)], big.mark = "."))`**
 
 ### Analisi Nazionale
 
