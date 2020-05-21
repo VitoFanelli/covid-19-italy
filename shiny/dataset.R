@@ -22,7 +22,7 @@ data <- read_delim("/Users/vito/Desktop/Data Science/covid-19/dati-regioni/dpc-c
 data <- data %>% filter(!is.na(data))
 
 data$data <- as.Date(data$data)
-data$denominazione_regione[data$codice_regione == 4] <- "Trentino Alto Adige"
+data$denominazione_regione[data$codice_regione %in% c("21","22")] <- "Trentino Alto Adige"
 
 # regional dataset
 regions <- data %>% 

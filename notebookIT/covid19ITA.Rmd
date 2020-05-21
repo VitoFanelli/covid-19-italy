@@ -28,7 +28,7 @@ load("../notebookIT/predictions.RData")
 
 dati$data <- as.Date(dati$data)
 colnames(dati)[4] <- "regione"
-dati$regione[dati$codice_regione == 4] <- "Trentino Alto Adige"
+dati$regione[dati$codice_regione %in% c("21","22")] <- "Trentino Alto Adige"
 
 covid19 <- dati %>% 
   group_by(regione, data) %>% 
@@ -223,6 +223,13 @@ highchart(type = "stock") %>%
         color = '#ff0000',
         dashStyle = "shortdash",
         width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 18/05"),
+        value = datetime_to_timestamp(as.Date("2020-05-18")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
       )
     )
   )
@@ -310,6 +317,13 @@ highchart(type = "stock") %>%
       list(
         label = list(text = "D.P.C.M. 27/04"),
         value = datetime_to_timestamp(as.Date("2020-04-27")),
+        color = '#ff0000',
+        dashStyle = "shortdash",
+        width = 1
+      ),
+      list(
+        label = list(text = "D.P.C.M. 18/05"),
+        value = datetime_to_timestamp(as.Date("2020-05-18")),
         color = '#ff0000',
         dashStyle = "shortdash",
         width = 1

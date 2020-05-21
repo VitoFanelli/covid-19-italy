@@ -170,6 +170,13 @@ server <- function(input, output, session){
             color = '#ff0000',
             dashStyle = "shortdash",
             width = 1
+          ),
+          list(
+            label = list(text = "D.P.C.M. 18/05"),
+            value = datetime_to_timestamp(as.Date("2020-05-18")),
+            color = '#ff0000',
+            dashStyle = "shortdash",
+            width = 1
           )
         )
       )
@@ -255,6 +262,13 @@ server <- function(input, output, session){
           list(
             label = list(text = "D.P.C.M. 27/04"),
             value = datetime_to_timestamp(as.Date("2020-04-27")),
+            color = '#ff0000',
+            dashStyle = "shortdash",
+            width = 1
+          ),
+          list(
+            label = list(text = "D.P.C.M. 18/05"),
+            value = datetime_to_timestamp(as.Date("2020-05-18")),
             color = '#ff0000',
             dashStyle = "shortdash",
             width = 1
@@ -462,6 +476,13 @@ server <- function(input, output, session){
             color = '#ff0000',
             dashStyle = "shortdash",
             width = 1
+          ),
+          list(
+            label = list(text = "D.P.C.M. 18/05"),
+            value = datetime_to_timestamp(as.Date("2020-05-18")),
+            color = '#ff0000',
+            dashStyle = "shortdash",
+            width = 1
           )
         )
       )
@@ -547,6 +568,13 @@ server <- function(input, output, session){
           list(
             label = list(text = "D.P.C.M. 27/04"),
             value = datetime_to_timestamp(as.Date("2020-04-27")),
+            color = '#ff0000',
+            dashStyle = "shortdash",
+            width = 1
+          ),
+          list(
+            label = list(text = "D.P.C.M. 18/05"),
+            value = datetime_to_timestamp(as.Date("2020-05-18")),
             color = '#ff0000',
             dashStyle = "shortdash",
             width = 1
